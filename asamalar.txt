@@ -1,0 +1,901 @@
+ROBOT BLOK PROGRAMLAMA UYGULAMASI
+TEKNİK TASARIM VE GELİŞTİRME PLANI
+===================================
+
+1. PROJENİN AMACI
+-----------------
+
+Tablet üzerinde çalışan, kullanıcıların blokları sürükleyip birleştirerek
+robot programları oluşturabildiği bir uygulama geliştirilecek.
+
+Uygulama ESP8266 NodeMCU CH340 (ESP-12F) tabanlı robot ile Wi-Fi üzerinden
+haberleşecek.
+
+Temel sistem:
+
+TABLET
+   |
+   v
+FLUTTER UYGULAMASI
+   |
+   +-- Blok Programlama
+   |
+   +-- Program Oluşturma
+   |
+   +-- JSON Komutları
+   |
+   +-- Wi-Fi
+   |
+   v
+ESP8266 NODEMCU CH340
+   |
+   +-- Motorlar
+   +-- LED
+   +-- Sensörler
+   +-- Buzzer
+   +-- Servo
+   |
+   v
+ROBOT
+
+
+2. KULLANILACAK TEKNOLOJİLER
+----------------------------
+
+TABLET UYGULAMASI
+- Flutter
+- Dart
+- VS Code
+
+ROBOT KARTI
+- ESP8266 NodeMCU CH340
+- ESP-12F modülü
+
+ESP8266 YAZILIMI
+- Arduino C++
+- Arduino IDE veya PlatformIO
+
+HABERLEŞME
+- Wi-Fi
+- İlk aşamada HTTP
+- İlerleyen aşamalarda WebSocket değerlendirilebilir
+
+VERİ FORMATI
+- JSON
+
+
+3. NEDEN FLUTTER?
+-----------------
+
+Bu proje için ana uygulama teknolojisi Flutter olacaktır.
+
+Flutter tercih edilmesinin nedenleri:
+
+- Android tabletlerde çalışabilir.
+- Dokunmatik ekranlara uygundur.
+- Modern kullanıcı arayüzleri oluşturulabilir.
+- Sürükle-bırak sistemi geliştirilebilir.
+- Blok tabanlı programlama arayüzü yapılabilir.
+- Animasyonlar kullanılabilir.
+- Wi-Fi üzerinden HTTP haberleşmesi yapılabilir.
+- İleride WebSocket kullanılabilir.
+- Android APK oluşturulabilir.
+- Proje ileride farklı platformlara uyarlanabilir.
+
+
+4. VS CODE KULLANIMI
+--------------------
+
+Flutter projesi tamamen VS Code üzerinden geliştirilebilir.
+
+Gerekli yazılımlar:
+
+1. Flutter SDK
+2. VS Code
+3. Flutter Extension
+4. Dart Extension
+5. Android SDK
+6. Android Emulator veya fiziksel Android tablet
+7. Git
+
+Kurulum kontrolü:
+
+flutter doctor
+
+Yeni Flutter projesi:
+
+flutter create robot_programlama
+
+Projeyi VS Code ile açma:
+
+code robot_programlama
+
+
+5. UYGULAMANIN ANA EKRANLARI
+----------------------------
+
+A) ANA SAYFA
+
+Ana sayfada:
+
+- Robot bağlantı durumu
+- ESP8266 bağlantı bilgisi
+- Yeni proje
+- Projelerim
+- Robotu bağla
+- Ayarlar
+
+bulunacak.
+
+
+B) BLOK PROGRAMLAMA EKRANI
+
+Ana uygulamanın en önemli bölümü olacaktır.
+
+Ekranda:
+
+- Blok kategorileri
+- Blok listesi
+- Çalışma alanı
+- Sürükle-bırak sistemi
+- Blokları sıralama
+- Blok silme
+- Geri alma
+- Yineleme
+- Programı çalıştır
+- Programı durdur
+- Programı kaydet
+
+bulunacak.
+
+
+C) ROBOT BAĞLANTI EKRANI
+
+Bu ekranda:
+
+- Wi-Fi durumu
+- ESP8266 IP adresi
+- ESP8266 adı
+- Bağlan
+- Bağlantıyı kes
+- Bağlantıyı test et
+
+özellikleri olacak.
+
+
+D) MANUEL ROBOT KONTROLÜ
+
+Kullanıcı blok kullanmadan robotu manuel olarak kontrol edebilecek.
+
+Örnek:
+
+        İLERİ
+
+SOL       DUR       SAĞ
+
+        GERİ
+
+Ayrıca:
+
+- LED aç
+- LED kapat
+- Buzzer
+- Servo
+
+kontrolleri bulunabilir.
+
+
+E) PROJE YÖNETİMİ
+
+Kullanıcı oluşturduğu programları kaydedebilecek.
+
+Özellikler:
+
+- Yeni proje
+- Projeyi kaydet
+- Projeyi aç
+- Projeyi sil
+- Projeyi kopyala
+- Proje adını değiştir
+
+
+6. BLOK KATEGORİLERİ
+--------------------
+
+İlk sürümde aşağıdaki kategoriler kullanılabilir.
+
+
+HAREKET BLOKLARI
+
+- İleri
+- Geri
+- Sola dön
+- Sağa dön
+- Dur
+- Belirli süre ileri git
+- Belirli süre geri git
+- Belirli süre dön
+
+
+KONTROL BLOKLARI
+
+- Bekle
+- Tekrarla
+- Eğer
+- Değilse
+
+
+LED BLOKLARI
+
+- LED aç
+- LED kapat
+- LED'i yak
+- LED'i söndür
+- LED'i belirli süre yak
+
+
+SES BLOKLARI
+
+- Buzzer aç
+- Buzzer kapat
+- Belirli süre ses çıkar
+
+
+SENSÖR BLOKLARI
+
+- Mesafe sensörünü oku
+- Çizgi sensörünü oku
+- Buton durumunu oku
+
+
+DEĞİŞKEN BLOKLARI
+
+- Değer ata
+- Değeri artır
+- Değeri azalt
+- Değeri oku
+
+
+7. BLOK PROGRAMLAMA SİSTEMİ
+---------------------------
+
+Kullanıcı blokları çalışma alanına sürükleyip yerleştirecek.
+
+Örneğin:
+
+[İLERİ]
+   |
+   v
+[2 SANİYE BEKLE]
+   |
+   v
+[SAĞA DÖN]
+   |
+   v
+[İLERİ]
+   |
+   v
+[DUR]
+
+
+Flutter bu blokları bir program modeline dönüştürecek.
+
+İlk aşamada bloklardan doğrudan C++ kodu üretmeye gerek yoktur.
+
+Bunun yerine bloklar JSON formatında bir programa dönüştürülebilir.
+
+
+8. JSON PROGRAM SİSTEMİ
+-----------------------
+
+Örnek:
+
+{
+    "program": [
+        {
+            "type": "move",
+            "direction": "forward",
+            "duration": 2000
+        },
+        {
+            "type": "turn",
+            "direction": "right",
+            "duration": 700
+        },
+        {
+            "type": "stop"
+        }
+    ]
+}
+
+
+Burada:
+
+type:
+Komutun türünü belirtir.
+
+direction:
+Robotun hangi yöne hareket edeceğini belirtir.
+
+duration:
+Komutun kaç milisaniye çalışacağını belirtir.
+
+
+9. TABLET - ESP8266 WIFI SİSTEMİ
+--------------------------------
+
+ESP8266 kendi Wi-Fi ağını oluşturabilir.
+
+Örnek:
+
+Wi-Fi adı:
+
+ROBOT-ESP8266
+
+Şifre:
+
+robot1234
+
+ESP8266 IP adresi:
+
+192.168.4.1
+
+
+Tablet bu Wi-Fi ağına bağlanacak.
+
+Önemli:
+
+Tablet ile ESP8266 arasında USB bağlantısı olmayacak.
+
+Tablet ve ESP8266 kablosuz olarak haberleşecek.
+
+İnternet bağlantısına ihtiyaç olmayacak.
+
+
+10. ESP8266 HTTP SERVER
+-----------------------
+
+ESP8266 üzerinde küçük bir HTTP server çalışacak.
+
+Örnek adresler:
+
+
+GET /status
+
+Robotun bağlantı ve durum bilgilerini döndürür.
+
+
+POST /command
+
+Tek bir komut gönderir.
+
+Örneğin:
+
+{
+    "command": "forward"
+}
+
+
+POST /program
+
+Birden fazla bloktan oluşan programı gönderir.
+
+
+POST /stop
+
+Robotu durdurur.
+
+
+Örnek cevap:
+
+{
+    "success": true,
+    "message": "Program alindi"
+}
+
+
+11. ESP8266 PROGRAMININ ÇALIŞMA MANTIĞI
+---------------------------------------
+
+Flutter tarafından gönderilen JSON ESP8266 tarafından alınır.
+
+ESP8266 programı JSON içerisindeki komutları sırayla çalıştırır.
+
+Örneğin:
+
+İLERİ 2000 ms
+
+1. Motorlar ileri çalışır.
+2. 2000 ms beklenir.
+3. Motorlar durdurulur.
+4. Sonraki komuta geçilir.
+
+
+12. İLK AŞAMADA MANUEL KONTROL
+------------------------------
+
+Blok sistemini yapmadan önce manuel robot kontrolü yapılmalıdır.
+
+Flutter:
+
+        [ İLERİ ]
+
+[ SOL ] [ DUR ] [ SAĞ ]
+
+        [ GERİ ]
+
+
+Örneğin kullanıcı İLERİ butonuna bastığında:
+
+Flutter
+   |
+   | POST /command
+   v
+ESP8266
+   |
+   v
+Motor sürücü
+   |
+   v
+Motorlar
+
+
+Bu sistem çalıştıktan sonra blok sistemine geçilecek.
+
+
+13. ACİL DURDURMA
+-----------------
+
+Uygulamada her zaman görünür bir:
+
+ACİL DURDUR
+
+butonu bulunmalıdır.
+
+Bu butona basıldığında:
+
+- Motorlar durdurulur.
+- ESP8266'ya STOP komutu gönderilir.
+- Çalışan program durdurulur.
+
+Robot güvenliği için ESP8266 tarafında da stop mekanizması bulunmalıdır.
+
+
+14. FLUTTER PROJE KLASÖR YAPISI
+-------------------------------
+
+lib/
+|
++-- main.dart
+|
++-- models/
+|   +-- block.dart
+|   +-- robot_program.dart
+|   +-- robot_status.dart
+|
++-- screens/
+|   +-- home_screen.dart
+|   +-- block_editor_screen.dart
+|   +-- connection_screen.dart
+|   +-- robot_control_screen.dart
+|   +-- projects_screen.dart
+|
++-- widgets/
+|   +-- block_widget.dart
+|   +-- block_palette.dart
+|   +-- workspace.dart
+|   +-- connection_status.dart
+|
++-- services/
+|   +-- esp_service.dart
+|   +-- wifi_service.dart
+|   +-- project_service.dart
+|
++-- utils/
+    +-- constants.dart
+
+
+15. DOSYALARIN GÖREVLERİ
+------------------------
+
+main.dart
+
+Uygulamanın başlangıç dosyası.
+
+
+block.dart
+
+Bir blokun veri modelini tutar.
+
+Örneğin:
+
+- Blok türü
+- Blok adı
+- Parametreler
+
+
+robot_program.dart
+
+Robot programını ve blok sırasını tutar.
+
+
+esp_service.dart
+
+ESP8266 ile HTTP haberleşmesini gerçekleştirir.
+
+
+wifi_service.dart
+
+Wi-Fi bağlantısıyla ilgili işlemleri yönetir.
+
+
+block_widget.dart
+
+Ekranda görünen tek bir blokun tasarımını oluşturur.
+
+
+block_palette.dart
+
+Kullanılabilecek blokları listeler.
+
+
+workspace.dart
+
+Blokların yerleştirildiği çalışma alanıdır.
+
+
+project_service.dart
+
+Projeleri kaydetme ve yükleme işlemlerini gerçekleştirir.
+
+
+16. ESP8266 YAZILIMI
+--------------------
+
+ESP8266 tarafında aşağıdaki sistemler bulunacak:
+
+- Wi-Fi Access Point
+- HTTP Server
+- JSON parser
+- Command handler
+- Program runner
+- Motor kontrolü
+- LED kontrolü
+- Sensör kontrolü
+- Acil durdurma
+
+İlk prototipte bunların tamamı tek bir Arduino dosyasında olabilir.
+
+Proje büyüdükçe modüllere ayrılabilir.
+
+
+17. GELİŞTİRME AŞAMALARI
+------------------------
+
+AŞAMA 1 - FLUTTER ORTAMI
+
+- Flutter kurulumu
+- VS Code kurulumu
+- Dart ve Flutter extensionları
+- Android SDK kurulumu
+- Tablet bağlantısı
+- İlk Flutter uygulaması
+
+
+AŞAMA 2 - ESP8266 WIFI
+
+- ESP8266 Access Point yapılacak.
+- Wi-Fi adı belirlenecek.
+- Wi-Fi şifresi belirlenecek.
+- ESP8266 IP adresi belirlenecek.
+- HTTP server kurulacak.
+
+
+AŞAMA 3 - İLK HABERLEŞME
+
+Flutter uygulaması:
+
+GET /status
+
+isteği gönderecek.
+
+ESP8266 cevap verecek.
+
+Daha sonra:
+
+POST /command
+
+test edilecek.
+
+
+AŞAMA 4 - MOTOR KONTROLÜ
+
+- İleri
+- Geri
+- Sol
+- Sağ
+- Dur
+
+komutları yapılacak.
+
+
+AŞAMA 5 - MANUEL KONTROL EKRANI
+
+- Dokunmatik kontrol
+- Bağlantı göstergesi
+- Acil durdurma
+- Robot durum göstergesi
+
+
+AŞAMA 6 - BLOK EDİTÖRÜ
+
+- Blok paleti
+- Çalışma alanı
+- Sürükle-bırak
+- Blok sıralama
+- Blok silme
+
+
+AŞAMA 7 - JSON PROGRAM SİSTEMİ
+
+Bloklar JSON'a dönüştürülecek.
+
+JSON ESP8266'ya gönderilecek.
+
+ESP8266 JSON programını çalıştıracak.
+
+
+AŞAMA 8 - KONTROL BLOKLARI
+
+- Bekle
+- Tekrarla
+- Eğer
+- Değilse
+
+
+AŞAMA 9 - SENSÖRLER
+
+- Mesafe sensörü
+- Çizgi sensörü
+- Buton
+- Diğer sensörler
+
+
+AŞAMA 10 - PROJE KAYDETME
+
+- Kaydet
+- Aç
+- Sil
+- Kopyala
+- Yeniden adlandır
+
+
+AŞAMA 11 - TASARIM
+
+- Modern arayüz
+- Animasyonlar
+- Robot göstergeleri
+- Blok tasarımları
+- Uygulama ikonu
+
+
+AŞAMA 12 - APK
+
+- Release build
+- Android tablette test
+- Farklı ekran boyutlarında test
+
+
+18. İLK PROTOTİPTE KULLANILMAYACAKLAR
+-------------------------------------
+
+İlk sürüm gereksiz yere karmaşıklaştırılmayacak.
+
+İlk aşamada:
+
+- Bluetooth kullanılmayacak.
+- Cloud server kullanılmayacak.
+- İnternet bağlantısı gerekmeyecek.
+- WebSocket kullanılmayacak.
+- C++ kod üretme sistemi yapılmayacak.
+
+Önce şu sistem çalıştırılacak:
+
+TABLET
+  |
+  | Wi-Fi
+  |
+ESP8266
+  |
+  |
+ROBOT
+
+
+19. TEST SİSTEMİ
+---------------
+
+TEST 1
+
+ESP8266 Wi-Fi ağı görünüyor mu?
+
+
+TEST 2
+
+Tablet ESP8266 Wi-Fi ağına bağlanabiliyor mu?
+
+
+TEST 3
+
+Flutter uygulaması 192.168.4.1 adresine ulaşabiliyor mu?
+
+
+TEST 4
+
+GET /status çalışıyor mu?
+
+
+TEST 5
+
+POST /command çalışıyor mu?
+
+
+TEST 6
+
+Motorlar doğru yönde hareket ediyor mu?
+
+
+TEST 7
+
+Bloklar JSON'a doğru dönüşüyor mu?
+
+
+TEST 8
+
+JSON program ESP8266'ya gönderilebiliyor mu?
+
+
+TEST 9
+
+ESP8266 programı sırayla çalıştırabiliyor mu?
+
+
+TEST 10
+
+Acil durdurma çalışıyor mu?
+
+
+20. HEDEF MİMARİ
+----------------
+
+             FLUTTER TABLET
+                   |
+                   |
+                 Wi-Fi
+                   |
+                   v
+            ESP8266 NODEMCU
+                   |
+          +--------+--------+
+          |        |        |
+        Motor    Sensör    LED
+          |
+          v
+        ROBOT
+
+
+Kullanıcı blokları oluşturur.
+
+        ↓
+
+Flutter blokları program modeline dönüştürür.
+
+        ↓
+
+Program JSON'a dönüştürülür.
+
+        ↓
+
+JSON Wi-Fi üzerinden ESP8266'ya gönderilir.
+
+        ↓
+
+ESP8266 JSON'u yorumlar.
+
+        ↓
+
+Robot komutları gerçekleştirir.
+
+
+21. İLK BAŞARI KRİTERİ
+----------------------
+
+İlk hedef çok basit tutulmalıdır.
+
+1. ESP8266 açılacak.
+2. ROBOT-ESP8266 Wi-Fi ağı oluşacak.
+3. Tablet bu Wi-Fi ağına bağlanacak.
+4. Flutter uygulaması ESP8266'ya ulaşacak.
+5. Flutter PING gönderecek.
+6. ESP8266 PONG cevabı verecek.
+
+Daha sonra:
+
+PING / PONG
+     |
+     v
+MANUEL ROBOT KONTROLÜ
+     |
+     v
+BLOK EDİTÖRÜ
+     |
+     v
+JSON PROGRAM
+     |
+     v
+ROBOT PROGRAMI
+     |
+     v
+SENSÖR VE KONTROL BLOKLARI
+
+
+22. TEKNOLOJİ ÖZETİ
+-------------------
+
+Tablet uygulaması:
+Flutter / Dart
+
+IDE:
+VS Code
+
+Robot kartı:
+ESP8266 NodeMCU CH340
+
+Wi-Fi modülü:
+ESP-12F
+
+ESP8266 yazılımı:
+Arduino C++
+
+İletişim:
+Wi-Fi
+
+Protokol:
+HTTP
+
+Veri formatı:
+JSON
+
+
+23. PROJENİN SON HEDEFİ
+-----------------------
+
+Amaç, kullanıcıların bilgisayar kodu yazmadan robot programlayabilmesini
+sağlayan bir tablet uygulaması geliştirmektir.
+
+Kullanıcı:
+
+BLOK SEÇER
+    ↓
+BLOĞU ÇALIŞMA ALANINA SÜRÜKLER
+    ↓
+BLOKLARI BİRLEŞTİRİR
+    ↓
+PROGRAMI ÇALIŞTIRIR
+    ↓
+FLUTTER JSON PROGRAMI OLUŞTURUR
+    ↓
+WIFI İLE ESP8266'YA GÖNDERİR
+    ↓
+ESP8266 PROGRAMI ÇALIŞTIRIR
+    ↓
+ROBOT HAREKET EDER
+
+
+İLK GELİŞTİRME HEDEFİ:
+
+Flutter uygulaması + ESP8266 Wi-Fi bağlantısı + PING/PONG.
+
+Bu sistem çalıştıktan sonra manuel motor kontrolü yapılacak.
+
+Manuel motor kontrolü çalıştıktan sonra blok programlama sistemine
+geçilecek.
