@@ -17,6 +17,8 @@
 //   GET /ses-cal        (3 vuruşluk melodi)
 //   GET /mesafe         (cm cinsinden mesafe; aynı zamanda "kart canlı mı" testi için kullanılır)
 //   GET /engel          ("var" / "yok")
+//   GET /sol-kol/yukari | /sol-kol/asagi | /sag-kol/yukari | /sag-kol/asagi
+//                       (kol servosunu tepe / dip açısına getirir)
 //
 // "İleri git 2 saniye" gibi kullanıcının seçtiği süreyi uygulayabilmek
 // için /ileri, /geri, /sol, /sag gibi kendi içinde sabit 1 saniye bekleyen
@@ -258,6 +260,8 @@ class EspService {
         return sendLed(ip, on: command['state'] != 'off', colorHex: command['color'] as String?);
       case 'buzzer':
         return _getOk(ip, '/bip');
+      case 'servo':
+        return _getOk(ip, '/${command['arm']}-kol/${command['direction']}');
       default:
         return true;
     }
@@ -338,6 +342,12 @@ Map<String, dynamic>? _blockToCommand(RobotBlockData block) {
       return null;
     case BlockType.sound:
       return {'type': 'buzzer', 'duration': durationMs};
+    case BlockType.servo:
+      return {
+        'type': 'servo',
+        'arm': block.label == 'Sağ kol' ? 'sag' : 'sol',
+        'direction': block.value == 'Aşağı' ? 'asagi' : 'yukari',
+      };
     default:
       return null;
   }

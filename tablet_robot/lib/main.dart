@@ -1659,6 +1659,9 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
           children: [
             _paletteBlock('Ses çal', Icons.volume_up, const Color(0xFF9333EA), BlockType.sound),
             _paletteBlock('Bip sesi', Icons.music_note, const Color(0xFF9333EA), BlockType.sound),
+            // Kol servoları: değer kutucuğuna dokununca Yukarı / Aşağı değişir.
+            _paletteBlock('Sol kol', Icons.back_hand, const Color(0xFF9333EA), BlockType.servo, value: 'Yukarı'),
+            _paletteBlock('Sağ kol', Icons.front_hand, const Color(0xFF9333EA), BlockType.servo, value: 'Yukarı'),
           ],
         );
       default:
@@ -1755,7 +1758,7 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
 
 enum BlockType {
   start, move, turn, stop, wait, repeat, forever,
-  ifBlock, ifElse, event, sensor, led, variable, sound,
+  ifBlock, ifElse, event, sensor, led, variable, sound, servo,
 }
 
 const List<Color> ledColorPalette = [
@@ -1959,6 +1962,10 @@ IconData iconForBlockLabel(String label) {
       return Icons.warning_amber;
     case 'LED Aç':
       return Icons.lightbulb;
+    case 'Sol kol':
+      return Icons.back_hand;
+    case 'Sağ kol':
+      return Icons.front_hand;
     case 'LED Kapat':
       return Icons.lightbulb_outline;
     case 'LED Rengi':
@@ -2143,6 +2150,9 @@ class SimpleRobotBlock extends StatelessWidget {
         block.unit = result['type'];
         onChanged!();
       }
+    } else if (block.type == BlockType.servo) {
+      block.value = block.value == 'Aşağı' ? 'Yukarı' : 'Aşağı';
+      onChanged!();
     } else if (block.value != null) {
       final newValue = await showNumberEditDialog(context, title: block.label, initialValue: block.value!);
       if (newValue != null) {
