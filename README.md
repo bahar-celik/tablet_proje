@@ -1,4 +1,4 @@
-# RobotKod
+# CezeriRobot
 
 Tablet üzerinde çalışan, kullanıcıların blokları sürükleyip birleştirerek
 robot programları oluşturabildiği bir uygulama. Uygulama ESP8266 tabanlı
@@ -12,7 +12,7 @@ doğrudan HTTP ile haberleşir.
          (tek Wi-Fi ağı, ör. "EvWifi")
           /          |            \
      Tablet       ESP "robot1"   ESP "robot2"
-   (RobotKod)    192.168.1.48    192.168.1.49
+   (CezeriRobot)    192.168.1.48    192.168.1.49
 ```
 
 - Modem/router komutları yönlendirmez, sadece ortak ağı sağlar.
@@ -26,7 +26,7 @@ doğrudan HTTP ile haberleşir.
 
 | Yol | Açıklama |
 |---|---|
-| `tablet_robot/` | Flutter tablet uygulaması (RobotKod) |
+| `tablet_robot/` | Flutter tablet uygulaması (CezeriRobot) |
 | `esp8266_firmware/` | ESP8266 kartları için örnek/başlangıç Arduino firmware'i ve kurulum rehberi |
 | `asamalar.txt` | Projenin orijinal teknik tasarım ve geliştirme planı |
 | `referansGörsel.png` | Arayüz tasarımı için referans görsel |

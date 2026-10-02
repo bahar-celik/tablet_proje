@@ -28,7 +28,7 @@ class TabletRobotApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Tablet Robot',
+      title: 'CezeriRobot',
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Roboto',
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Tablet Robot',
+          'CezeriRobot',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -206,6 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: MenuCard(
                         icon: Icons.code,
                         title: 'Programla',
+                        illustration: const ProgramIllustration(),
                         subtitle: 'Bloklarla robotunu programla',
                         color: const Color(0xFF2563EB),
                         onTap: () {
@@ -223,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: MenuCard(
                         icon: Icons.gamepad,
                         title: 'Kontrol Et',
+                        illustration: const ControlIllustration(),
                         subtitle: 'Robotu manuel olarak kontrol et',
                         color: Colors.green,
                         onTap: () {
@@ -238,6 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: MenuCard(
                         icon: Icons.folder,
                         title: 'Projeler',
+                        illustration: const ProjectsIllustration(),
                         subtitle: 'Projelerini yönet',
                         color: Colors.orange,
                         onTap: () {
@@ -253,6 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: MenuCard(
                         icon: Icons.settings,
                         title: 'Ayarlar',
+                        illustration: const SettingsIllustration(),
                         subtitle: 'Uygulama ayarları',
                         color: Colors.purple,
                         onTap: () {
@@ -283,6 +287,7 @@ class MenuCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final Color color;
+  final Widget illustration;
   final VoidCallback onTap;
 
   const MenuCard({
@@ -291,6 +296,7 @@ class MenuCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.color,
+    required this.illustration,
     required this.onTap,
   });
 
@@ -300,7 +306,7 @@ class MenuCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
@@ -315,37 +321,343 @@ class MenuCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+            // Kartın üst kısmını dolduran illüstrasyon alanı
+            Expanded(
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 27,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color.withOpacity(0.20), color.withOpacity(0.06)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: -30,
+                        right: -30,
+                        child: _decorCircle(110),
+                      ),
+                      Positioned(
+                        bottom: -24,
+                        left: -18,
+                        child: _decorCircle(80),
+                      ),
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: FittedBox(child: illustration),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            const Spacer(),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            const SizedBox(height: 14),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Row(
+                children: [
+                  Icon(icon, color: color, size: 22),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_rounded, color: color.withOpacity(0.7), size: 20),
+                ],
               ),
             ),
             const SizedBox(height: 5),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(6, 0, 6, 6),
+              child: Text(
+                subtitle,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _decorCircle(double size) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.35),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+// ============================================================
+// ANA MENÜ KARTI İLLÜSTRASYONLARI
+// ============================================================
+//
+// Görsel dosyası yerine widget'larla çizilir; her ekran boyutunda net
+// görünür ve renkleri uygulamadaki blok/buton renkleriyle aynıdır.
+
+// Programla: bir döngü bloğunun içine yerleşmiş yapboz blokları
+class ProgramIllustration extends StatelessWidget {
+  const ProgramIllustration({super.key});
+
+  Widget _block(String label, IconData icon, Color color, double width) {
+    return CustomPaint(
+      painter: PuzzleBlockPainter(color: color),
+      child: SizedBox(
+        width: width,
+        height: 34,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.white, size: 15),
+              const SizedBox(width: 7),
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const loopColor = Color(0xFF22C55E);
+    // Bloklar alttakinin oyuğuna oturacak kadar üst üste bindirilir.
+    const overlap = Offset(0, -3);
+    return SizedBox(
+      width: 280,
+      height: 210,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _block('Başlat', Icons.play_arrow_rounded, const Color(0xFFEAB308), 110),
+            Transform.translate(
+              offset: overlap,
+              child: CustomPaint(
+                painter: PuzzleBlockPainter(color: loopColor),
+                child: Container(
+                  width: 190,
+                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.loop, color: Colors.white, size: 15),
+                          const SizedBox(width: 7),
+                          const Text(
+                            'Tekrarla',
+                            style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                            child: const Text(
+                              '3',
+                              style: TextStyle(color: loopColor, fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _block('İleri git', Icons.arrow_upward, const Color(0xFF2196F3), 150),
+                            Transform.translate(
+                              offset: overlap,
+                              child: _block('LED Aç', Icons.lightbulb, const Color(0xFFDB2777), 135),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Transform.translate(
+              offset: overlap * 2,
+              child: _block('Bekle', Icons.timer, const Color(0xFFF97316), 120),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Kontrol Et: Manuel Kontrol ekranındaki yön tuşları
+class ControlIllustration extends StatelessWidget {
+  const ControlIllustration({super.key});
+
+  Widget _key(IconData icon, Color color) {
+    return Container(
+      width: 48,
+      height: 48,
+      margin: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(13),
+        boxShadow: [
+          BoxShadow(color: color.withOpacity(0.35), blurRadius: 6, offset: const Offset(0, 3)),
+        ],
+      ),
+      child: Icon(icon, color: Colors.white, size: 28),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const blue = Color(0xFF2563EB);
+    const purple = Color(0xFF8B5CF6);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _key(Icons.keyboard_arrow_up_rounded, blue),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _key(Icons.keyboard_arrow_left_rounded, purple),
+            _key(Icons.stop_rounded, const Color(0xFFDC2626)),
+            _key(Icons.keyboard_arrow_right_rounded, purple),
+          ],
+        ),
+        _key(Icons.keyboard_arrow_down_rounded, blue),
+      ],
+    );
+  }
+}
+
+// Projeler: klasör ve arkasında proje kartları
+class ProjectsIllustration extends StatelessWidget {
+  const ProjectsIllustration({super.key});
+
+  Widget _paper(List<Color> rows) {
+    return Container(
+      width: 84,
+      height: 100,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 6, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (int i = 0; i < rows.length; i++)
+            Container(
+              width: 40.0 + (i % 2) * 18,
+              height: 10,
+              margin: const EdgeInsets.only(bottom: 6),
+              decoration: BoxDecoration(color: rows[i], borderRadius: BorderRadius.circular(3)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 170,
+      height: 130,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Positioned(
+            left: 22,
+            top: 4,
+            child: Transform.rotate(
+              angle: -0.18,
+              child: _paper(const [Color(0xFF2196F3), Color(0xFFF97316), Color(0xFF22C55E), Color(0xFF2196F3)]),
+            ),
+          ),
+          Positioned(
+            right: 22,
+            top: 0,
+            child: Transform.rotate(
+              angle: 0.14,
+              child: _paper(const [Color(0xFFDB2777), Color(0xFF2196F3), Color(0xFFF97316), Color(0xFF0891B2)]),
+            ),
+          ),
+          const Positioned(
+            bottom: -14,
+            child: Icon(Icons.folder_rounded, size: 120, color: Colors.orange),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Ayarlar: dişliler, Wi-Fi ve robot
+class SettingsIllustration extends StatelessWidget {
+  const SettingsIllustration({super.key});
+
+  Widget _badge(IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 6, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Icon(icon, color: color, size: 24),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 170,
+      height: 130,
+      child: Stack(
+        children: [
+          const Positioned(
+            left: 30,
+            top: 6,
+            child: Icon(Icons.settings, size: 104, color: Colors.purple),
+          ),
+          Positioned(
+            right: 18,
+            bottom: 0,
+            child: Icon(Icons.settings, size: 58, color: Colors.purple.withOpacity(0.55)),
+          ),
+          Positioned(left: 4, bottom: 8, child: _badge(Icons.wifi, const Color(0xFF16A34A))),
+          Positioned(right: 10, top: 2, child: _badge(Icons.smart_toy, const Color(0xFF2563EB))),
+        ],
       ),
     );
   }
@@ -585,8 +897,8 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
                     text: const TextSpan(
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                       children: [
-                        TextSpan(text: 'Robot', style: TextStyle(color: Colors.white)),
-                        TextSpan(text: 'Kod', style: TextStyle(color: Color(0xFFFACC15))),
+                        TextSpan(text: 'Cezeri', style: TextStyle(color: Colors.white)),
+                        TextSpan(text: 'Robot', style: TextStyle(color: Color(0xFFFACC15))),
                       ],
                     ),
                   ),
@@ -767,7 +1079,7 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
                   Icon(Icons.smart_toy_outlined, size: 13, color: Colors.grey.shade400),
                   const SizedBox(width: 5),
                   Text(
-                    'RobotKod v1.0',
+                    'CezeriRobot v1.0',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -951,7 +1263,6 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
                                           : payload.block,
                                     );
                                   });
-                                  _scrollToBottomSoon();
                                 },
                                 child: _workspaceBlock(workspaceBlocks[i], i),
                               ),
@@ -1052,9 +1363,17 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
         removeFromSource: onDelete,
       ),
       axis: Axis.vertical,
+      // Kısa basılı tutunca sürükleme başlar. Bırakılacak yer (bir bloğun
+      // üst/alt yarısı) parmağın konumuna göre hesaplansın diye gölge
+      // parmaktan başlar (bkz. DragReorderSlot).
+      delay: const Duration(milliseconds: 250),
+      dragAnchorStrategy: pointerDragAnchorStrategy,
       feedback: Material(
         color: Colors.transparent,
-        child: buildDragGhost(block),
+        child: Transform.translate(
+          offset: const Offset(-40, -22),
+          child: buildDragGhost(block),
+        ),
       ),
       childWhenDragging: Opacity(opacity: 0.3, child: content),
       child: Dismissible(
@@ -1369,13 +1688,17 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
 
     return Draggable<BlockDragPayload>(
       data: BlockDragPayload(block: data),
+      dragAnchorStrategy: pointerDragAnchorStrategy,
       feedback: Material(
         color: Colors.transparent,
-        child: SizedBox(
-          width: 190,
-          child: SimpleRobotBlock(
-            block: data,
-            compact: true,
+        child: Transform.translate(
+          offset: const Offset(-40, -22),
+          child: SizedBox(
+            width: 190,
+            child: SimpleRobotBlock(
+              block: data,
+              compact: true,
+            ),
           ),
         ),
       ),
@@ -2303,12 +2626,20 @@ class _DragReorderSlotState extends State<DragReorderSlot> {
         widget.onAccept(details.data, topHalf);
       },
       builder: (context, candidateData, rejectedData) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
+        // Gösterge yer kaplamadan bloğun üst/alt kenarına çizilir; böylece
+        // sürüklerken bloklar kaymaz ve parmağın altındaki hedef değişmez.
+        return Stack(
+          clipBehavior: Clip.none,
           children: [
-            if (_hovering && _topHalf) _indicator(),
             KeyedSubtree(key: _childKey, child: widget.child),
-            if (_hovering && !_topHalf) _indicator(),
+            if (_hovering)
+              Positioned(
+                left: 0,
+                right: 0,
+                top: _topHalf ? -2 : null,
+                bottom: _topHalf ? null : -2,
+                child: IgnorePointer(child: _indicator()),
+              ),
           ],
         );
       },
@@ -2318,7 +2649,6 @@ class _DragReorderSlotState extends State<DragReorderSlot> {
   Widget _indicator() {
     return Container(
       height: 4,
-      margin: const EdgeInsets.symmetric(vertical: 3),
       decoration: BoxDecoration(
         color: const Color(0xFF2563EB),
         borderRadius: BorderRadius.circular(2),

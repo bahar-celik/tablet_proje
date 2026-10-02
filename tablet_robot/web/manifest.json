@@ -1,6 +1,6 @@
 {
-    "name": "tablet_robot",
-    "short_name": "tablet_robot",
+    "name": "CezeriRobot",
+    "short_name": "CezeriRobot",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
