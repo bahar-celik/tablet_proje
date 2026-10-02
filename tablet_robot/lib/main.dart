@@ -1101,20 +1101,25 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
     );
   }
 
-  Future<void> _runProgram() async {
+  Future<void> _runProgram() => _runBlocks(workspaceBlocks, emptyMessage: 'Çalışma alanında henüz blok yok.');
+
+  // "Butona basılınca" bloğundaki düğmeye basılınca sadece o bloğun
+  // içindeki bloklar çalıştırılır.
+  Future<void> _runBlocks(List<RobotBlockData> blocks, {required String emptyMessage}) async {
+    if (_running) return;
     final robot = _activeRobot;
     if (robot == null) {
       _showNoRobotSelected();
       return;
     }
-    if (workspaceBlocks.isEmpty) {
+    if (blocks.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Çalışma alanında henüz blok yok.')),
+        SnackBar(content: Text(emptyMessage)),
       );
       return;
     }
     setState(() => _running = true);
-    final ok = await EspService.sendProgram(robot.ip, workspaceBlocks);
+    final ok = await EspService.sendProgram(robot.ip, blocks);
     if (!mounted) return;
     setState(() {
       _running = false;
@@ -1335,6 +1340,9 @@ class _ProgrammingScreenState extends State<ProgrammingScreen> {
             width: maxWidth < 400 ? maxWidth : 400,
             onChanged: () => setState(() {}),
             buildChildWidget: _buildChildWidget,
+            onPress: block.label == 'Butona basılınca'
+                ? () => _runBlocks(block.children, emptyMessage: 'Önce butonun içine blok koy.')
+                : null,
             onAddChild: (payload, anchorId, insertBefore) =>
                 _insertIntoContainer(block, block.children, payload, anchorId, insertBefore),
             onDeleteChild: (childIndex) {
@@ -2274,6 +2282,8 @@ class ContainerBlock extends StatelessWidget {
   final Function(int)? onDeleteElseChild;
   final VoidCallback onChanged;
   final ChildBlockBuilder buildChildWidget;
+  // Doluysa bloğun simgesi basılabilir bir düğme olur ("Butona basılınca").
+  final VoidCallback? onPress;
 
   const ContainerBlock({
     super.key,
@@ -2285,6 +2295,7 @@ class ContainerBlock extends StatelessWidget {
     required this.buildChildWidget,
     this.onAddElseChild,
     this.onDeleteElseChild,
+    this.onPress,
   });
 
   bool get _isIf => block.type == BlockType.ifBlock || block.type == BlockType.ifElse;
@@ -2373,7 +2384,25 @@ class ContainerBlock extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(block.icon, color: Colors.white, size: 20),
+                if (onPress != null)
+                  Tooltip(
+                    message: 'Bas',
+                    child: Material(
+                      color: Colors.white,
+                      shape: const CircleBorder(),
+                      elevation: 2,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: onPress,
+                        child: Padding(
+                          padding: const EdgeInsets.all(7),
+                          child: Icon(block.icon, color: block.color, size: 22),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  Icon(block.icon, color: Colors.white, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
